@@ -29,7 +29,7 @@ st.markdown("""
             margin: 0 auto; 
             text-align: center; 
             font-size: 15px; 
-            color: #e6edf3 !important; /* Ganti ke warna putih terang berkualiti */
+            color: #e6edf3 !important; 
             line-height: 1.7; 
             padding: 30px 10px; 
         }
@@ -42,7 +42,6 @@ st.markdown("""
             font-weight: 300; 
         }
     </style>
-""", unsafe_allow_html=True)
 
 # ==========================================
 # EMBEDDED RESOURCES & NLP PIPELINE
