@@ -42,7 +42,7 @@ st.markdown("""
             font-weight: 300; 
         }
     </style>
-
+""", unsafe_allow_html=True)
 # ==========================================
 # EMBEDDED RESOURCES & NLP PIPELINE
 # ==========================================
