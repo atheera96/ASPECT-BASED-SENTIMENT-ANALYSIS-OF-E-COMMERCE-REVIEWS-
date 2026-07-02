@@ -487,7 +487,7 @@ elif st.session_state.current_page == "Real-Time Testing":
                         st.plotly_chart(fig_u_pie, use_container_width=True, config={'displayModeBar': False})
                     
                     st.markdown("---")
-                    st.write("#### Annotated Data Sample Output Preview (First 10 Rows):")
+                    st.write("#### Data Sample Output Preview:")
                     st.dataframe(
                         uploaded_df[[chosen_text_col, 'Cleaned Text', 'Extracted Aspect', 'Predicted Sentiment']].head(10), 
                         use_container_width=True
