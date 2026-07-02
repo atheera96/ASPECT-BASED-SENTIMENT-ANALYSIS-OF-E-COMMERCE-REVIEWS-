@@ -12,6 +12,37 @@ from nltk.stem import WordNetLemmatizer
 
 # Set Streamlit page configuration to Wide Mode
 st.set_page_config(page_title="Aspect-Based Sentiment Analysis Platform", layout="wide")
+page_title="Aspect-Based Sentiment Analysis Platform", 
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+st.markdown("""
+    <style>
+        .stApp {
+            background-color: #0d1117 !important;
+            color: #c9d1d9 !important;
+        }
+        
+        .intro-text { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            text-align: center; 
+            font-size: 15px; 
+            color: #e6edf3 !important; /* Ganti ke warna putih terang berkualiti */
+            line-height: 1.7; 
+            padding: 30px 10px; 
+        }
+        
+       
+        .hero-title { 
+            font-size: 20px; 
+            color: #8b949e !important; 
+            margin-bottom: 5px; 
+            font-weight: 300; 
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # ==========================================
 # EMBEDDED RESOURCES & NLP PIPELINE
