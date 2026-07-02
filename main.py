@@ -18,7 +18,12 @@ page_title="Aspect-Based Sentiment Analysis Platform",
 )
 
 st.markdown("""
-      <style>
+     <style>
+        .stApp {
+            background-color: #0d1117 !important;
+            color: #c9d1d9 !important;
+        }
+
         label[data-testid="stWidgetLabel"] p {
             color: #ffffff !important;
             font-size: 16px !important;
@@ -27,10 +32,9 @@ st.markdown("""
 
         input::placeholder {
             color: #8b949e !important;
-        }
-
+       }
         div.stButton > button {
-            color: #ffffff !important; 
+            color: #ffffff !important;
         }
         
         div.stButton > button[kind="secondary"] {
@@ -48,11 +52,13 @@ st.markdown("""
             font-weight: 500 !important;
         }
         
+        /* Tambahan: Baiki kapsyen subheader yang pudar */
         .stCaption {
             color: #8b949e !important;
         }
     </style>
 """, unsafe_allow_html=True)
+
 # ==========================================
 # EMBEDDED RESOURCES & NLP PIPELINE
 # ==========================================
