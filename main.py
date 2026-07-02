@@ -19,27 +19,33 @@ page_title="Aspect-Based Sentiment Analysis Platform",
 
 st.markdown("""
     <style>
+       
         .stApp {
             background-color: #0d1117 !important;
             color: #c9d1d9 !important;
         }
-        
-        .intro-text { 
-            max-width: 900px; 
-            margin: 0 auto; 
-            text-align: center; 
-            font-size: 15px; 
-            color: #e6edf3 !important; 
-            line-height: 1.7; 
-            padding: 30px 10px; 
+
+        div.stButton > button {
+            color: #ffffff !important; 
         }
         
-       
-        .hero-title { 
-            font-size: 20px; 
-            color: #8b949e !important; 
-            margin-bottom: 5px; 
-            font-weight: 300; 
+        div.stButton > button[kind="secondary"] {
+            background-color: #21262d !important;
+            color: #c9d1d9 !important;
+            border: 1px solid #30363d !important;
+        }
+        div.stButton > button[kind="secondary"]:hover {
+            background-color: #30363d !important;
+            color: #ffffff !important;
+        }
+
+        .stWidgetLabel p {
+            color: #e6edf3 !important;
+            font-weight: 500 !important;
+        }
+        
+        .stCaption {
+            color: #8b949e !important;
         }
     </style>
 """, unsafe_allow_html=True)
