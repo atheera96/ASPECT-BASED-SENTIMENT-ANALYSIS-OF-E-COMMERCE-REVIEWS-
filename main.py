@@ -58,16 +58,16 @@ def detect_aspect(text):
             return [aspect]
     return ['Others']
 
-# 💡 Aturan pintar untuk pintas ralat model Naïve Bayes akibat data imbalance
+# 💡 Rule-based override for Naïve Bayes data imbalance error
 def refine_sentiment_with_rules(text, predicted_label):
     text_lower = str(text).lower()
     
-    # 1. Lindungi frasa penafian positif daripada diganggu oleh aturan negatif
+    # 1. Protect positive-leaning phrases from negative keyword overrides
     positive_denial = ['not bad', 'not that bad', 'not slow', 'no issue', 'no damage', 'no defect', 'so far so good']
     if any(phrase in text_lower for phrase in positive_denial):
         return predicted_label # Biarkan keputusan asal model AI (biasanya Positive)
 
-    # 2. Kata kunci kemarahan/kekecewaan tegar shopee
+    # 2. dissatisfaction and anger keywords from Shopee reviews
     strong_negative = [
         'terrible', 'worst', 'broken', 'damaged', 'fake', 
         'waste money', 'waste time', 'refund', 'not work', "doesn't work", 
@@ -75,9 +75,9 @@ def refine_sentiment_with_rules(text, predicted_label):
         'scam', 'wrong item', 'waste'
     ]
     
-    # 3. Jalankan pintasan tegar untuk kata kunci negatif mutlak sahaja
+    # 3. Execute hard overrides for absolute negative keywords only
     if any(word in text_lower for word in strong_negative):
-        return 2  # Paksa pulangkan kelas Negative Class (2)
+        return 2  
             
     return predicted_label
 
@@ -87,7 +87,6 @@ def refine_sentiment_with_rules(text, predicted_label):
 # ==========================================
 @st.cache_resource
 def load_prediction_models():
-    # 💡 DIKEMASKINI: Ditukar ke fail model NB sebenar yang anda simpan dalam skrip latihan tadi
     if os.path.exists('naive_bayes_model.pkl') and os.path.exists('tfidf_vectorizer.pkl'):
         model = joblib.load('naive_bayes_model.pkl')
         vectorizer = joblib.load('tfidf_vectorizer.pkl')
@@ -244,7 +243,7 @@ if st.session_state.current_page == "Home":
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='brand-section-title'>CORE OPERATIONAL ASPECTS UNDER ANALYSIS</div>", unsafe_allow_html=True)
+    st.markdown("<div class='brand-section-title'>ASPECTS UNDER ANALYSIS</div>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     with col1:
