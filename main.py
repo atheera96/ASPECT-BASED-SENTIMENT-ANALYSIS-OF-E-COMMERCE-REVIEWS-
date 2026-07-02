@@ -11,7 +11,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
 # Set Streamlit page configuration to Wide Mode
-st.set_page_config(page_title="Aspect-Based Sentiment Analysis Platform", layout="wide")
+st.set_page_config(
 page_title="Aspect-Based Sentiment Analysis Platform", 
     layout="wide",
     initial_sidebar_state="collapsed"
