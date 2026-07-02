@@ -18,11 +18,15 @@ page_title="Aspect-Based Sentiment Analysis Platform",
 )
 
 st.markdown("""
-    <style>
-       
-        .stApp {
-            background-color: #0d1117 !important;
-            color: #c9d1d9 !important;
+      <style>
+        label[data-testid="stWidgetLabel"] p {
+            color: #ffffff !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+        }
+
+        input::placeholder {
+            color: #8b949e !important;
         }
 
         div.stButton > button {
