@@ -74,75 +74,98 @@ def load_nlp_resources():
 
 stop_words, lemmatizer = load_nlp_resources()
 
+
 def clean_text(text):
-    if not text or pd.isna(text): 
+
+    if not text or pd.isna(text):
         return ""
-    text = str(text).lower()
+
+    text = str(text)
+
+    text = text.replace("â€™", "'")
+    text = text.replace("â€“", "-")
+
+    text = text.lower()
+
     text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+
     text = re.sub(r'@\w+', '', text)
+
     text = re.sub(r'(.)\1{2,}', r'\1', text)
-    text = re.sub(r'[^a-zA-Z\s]', ' ', text)
+
+    text = text.replace("doesnt", "does not")
+    text = text.replace("dont", "do not")
+    text = text.replace("cant", "cannot")
+
+    text = text.replace("so cheap", "affordable")
+    text = text.replace("cheap price", "affordable")
+
+    text = re.sub(r"[^a-zA-Z\s']", " ", text)
+
     try:
+
         tokens = word_tokenize(text)
-        filtered_tokens = [word for word in tokens if word not in stop_words]
-        lemmatized_tokens = [lemmatizer.lemmatize(word) for word in filtered_tokens]
-        return ' '.join(lemmatized_tokens)
-    except: 
+
+        filtered_tokens = [
+            word for word in tokens
+            if word not in stop_words
+        ]
+
+        lemmatized_tokens = [
+            lemmatizer.lemmatize(word)
+            for word in filtered_tokens
+        ]
+
+        return " ".join(lemmatized_tokens)
+
+    except:
         return text
 
-# Aspek UI Keywords
 aspect_keywords = {
-    'Product Quality': ['quality', 'material', 'authentic', 'original', 'fake', 'good', 'excellent', 'sturdy', 'thick'],
-    'Packaging Quality': ['box', 'bubble', 'wrap', 'bubblewrap', 'tape', 'seal', 'dented', 'torn', 'secure', 'packing', 'packaging', 'wrapped'],
-    'Delivery & Service': ['delivery', 'shipping', 'shipped', 'received', 'fast', 'slow', 'courier', 'tracking', 'arrive', 'post', 'seller', 'chat', 'response', 'friendly']
+    'Product Quality': ['quality', 'material', 'authentic', 'original', 'fake', 'durable', 'excellent', 'sturdy', 'thick', 'affordable', 'cheap','comfortable',
+    'comfort', 'soft', 'hard', 'broken', 'broke' 'working', 'works', 'perfect','perfectly'],
+    'Packaging Quality': ['box', 'bubble', 'wrap', 'bubblewrap', 'tape', 'seal', 'dented', 'torn', 'secure', 'packing', 'packaging', 'wrapped', 'package',
+    'packaged', 'packed'],
+    'Delivery & Service': ['delivery', 'shipping', 'shipped', 'received', 'fast', 'slow', 'courier', 'tracking', 'arrive', 'post', 'seller', 'chat', 'response', 'friendly', 'deliver',
+                           'delivered','replacement']
 }
-
 def detect_aspect(text):
-    text = str(text).lower()
+
+    cleaned = clean_text(text)
+
+    tokens = word_tokenize(cleaned)
+
+    scores = {}
+
     for aspect, keywords in aspect_keywords.items():
-        if any(word in text for word in keywords):
-            return [aspect]
-    return ['Others']
 
-# 💡 Rule-based override for Naïve Bayes data imbalance error
-def refine_sentiment_with_rules(text, predicted_label):
-    text_lower = str(text).lower()
-    
-    # 1. Protect positive-leaning phrases from negative keyword overrides
-    positive_denial = ['not bad', 'not that bad', 'not slow', 'no issue', 'no damage', 'no defect', 'so far so good']
-    if any(phrase in text_lower for phrase in positive_denial):
-        return predicted_label # Biarkan keputusan asal model AI (biasanya Positive)
+        scores[aspect] = sum(
+            1 for keyword in keywords
+            if keyword in tokens
+        )
 
-    # 2. dissatisfaction and anger keywords from Shopee reviews
-    strong_negative = [
-        'terrible', 'worst', 'broken', 'damaged', 'fake', 
-        'waste money', 'waste time', 'refund', 'not work', "doesn't work", 
-        'regret', 'poor quality', 'disappointed', 'defect', 'rosak', 'kecewa',
-        'scam', 'wrong item', 'waste'
-    ]
-    
-    # 3. Execute hard overrides for absolute negative keywords only
-    if any(word in text_lower for word in strong_negative):
-        return 2  
-            
-    return predicted_label
+    if max(scores.values()) == 0:
+        return ["Others"]
 
-
+    return [max(scores, key=scores.get)]
 # ==========================================
 # 1. MODEL LOADING & CONFIGURATION
 # ==========================================
 @st.cache_resource
 def load_prediction_models():
-    if os.path.exists('naive_bayes_model.pkl') and os.path.exists('tfidf_vectorizer.pkl'):
-        model = joblib.load('naive_bayes_model.pkl')
-        vectorizer = joblib.load('tfidf_vectorizer.pkl')
-        return model, vectorizer
-    return None, None
 
+    sentiment_model = joblib.load("naive_bayes_model.pkl")
+
+    sentiment_vectorizer = joblib.load("tfidf_vectorizer.pkl")
+
+    return sentiment_model, sentiment_vectorizer
 ai_model, tfidf_vectorizer = load_prediction_models()
-sentiment_map = {0: 'Positive', 1: 'Neutral', 2: 'Negative'}
 
-
+sentiment_map = {
+    0: "Positive",
+    1: "Neutral",
+    2: "Negative"
+}
 # ==========================================
 # 2. HORIZONTAL NAVBAR & TEMA CSS
 # ==========================================
@@ -253,7 +276,40 @@ def load_macro_data_cached():
         mock_aspects = np.random.choice(['Delivery', 'Others', 'Price', 'Quality', 'Service'], size=total_mock, p=[0.25, 0.15, 0.10, 0.40, 0.10])
         mock_sentiments = np.random.choice(['Positive', 'Neutral', 'Negative'], size=total_mock, p=[0.948, 0.027, 0.025])
         return pd.DataFrame({'aspects': mock_aspects, 'Sentiment': mock_sentiments})
+def refine_sentiment_with_rules(text, predicted_label):
 
+    text = str(text).lower()
+
+    positive_phrases = [
+        "not bad",
+        "no issue",
+        "no problem",
+        "worth buying",
+        "worth it"
+    ]
+
+    if any(p in text for p in positive_phrases):
+        return 0
+
+    strong_negative = [
+        "broken",
+        "broke",
+        "damaged",
+        "damage",
+        "fake",
+        "refund",
+        "scam",
+        "poor quality",
+        "defect",
+        "doesn't work",
+        "not work",
+        "wrong item"
+    ]
+
+    if any(w in text for w in strong_negative):
+        return 2
+
+    return predicted_label
 
 # ==========================================
 # PAGE 1: LANDING PAGE
@@ -384,7 +440,7 @@ elif st.session_state.current_page == "Analytics Dashboard":
 
 
 # ==========================================
-# PAGE 3: SENTIMEN ANALYZER (Sistem Pengujian Bersepadu)
+# PAGE 3: SENTIMEN ANALYZER 
 # ==========================================
 elif st.session_state.current_page == "Real-Time Testing":
     st.title("Sentimen Analyzer")
@@ -417,7 +473,6 @@ elif st.session_state.current_page == "Real-Time Testing":
             if ai_model and tfidf_vectorizer:
                 vec_in = tfidf_vectorizer.transform([cleaned_in])
                 pred = ai_model.predict(vec_in)[0]
-                # Diproses dengan penapisan pintar baharu
                 pred = refine_sentiment_with_rules(manual_input, pred)
             else:
                 pred = 0 if any(w in cleaned_in for w in ['good', 'great', 'fast']) else 2
@@ -455,7 +510,7 @@ elif st.session_state.current_page == "Real-Time Testing":
                             vectors = tfidf_vectorizer.transform(uploaded_df['Cleaned Text'].fillna(''))
                             preds = ai_model.predict(vectors)
                             
-                            # 💡 DIKEMASKINI: Membetulkan ralat zip ulasan pukal (row[chosen_text_col] digunakan terus sebagai input teks luaran)
+                           
                             uploaded_df['label_pred'] = [refine_sentiment_with_rules(row[chosen_text_col], p) for row, p in zip(uploaded_df.to_dict('records'), preds)]
                             uploaded_df['Predicted Sentiment'] = uploaded_df['label_pred'].map(sentiment_map)
                         else:
